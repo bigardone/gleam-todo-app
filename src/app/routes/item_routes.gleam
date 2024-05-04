@@ -65,6 +65,18 @@ pub fn post_create_item(req: Request, ctx: Context) {
   }
 }
 
+pub fn delete_item(req: Request, ctx: Context, item_id: String) {
+  let current_items = ctx.items
+
+  let json_items = {
+    list.filter(current_items, fn(item) { item.id != item_id })
+    |> todos_to_json()
+  }
+
+  wisp.redirect("/")
+  |> wisp.set_cookie(req, "items", json_items, wisp.PlainText, 60 * 60 * 24)
+}
+
 fn items_decoder() -> fn(Dynamic) -> Result(List(ItemJson), List(DecodeError)) {
   dynamic.decode3(
     ItemJson,
